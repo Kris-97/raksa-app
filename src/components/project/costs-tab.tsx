@@ -73,6 +73,7 @@ export function CostsTab({ projectId, costs: initialCosts, categories }: CostsTa
         vat_percent: vatPercent,
         amount_with_vat: Math.round(amountWithVat * 100) / 100,
         vendor: (form.get("vendor") as string) || null,
+        reference: (form.get("reference") as string) || null,
         invoice_date: form.get("invoice_date") as string,
         created_by: user!.id,
       })
@@ -156,6 +157,10 @@ export function CostsTab({ projectId, costs: initialCosts, categories }: CostsTa
                 </div>
               </div>
               <div className="space-y-2">
+                <Label>Viite / märke</Label>
+                <Input name="reference" placeholder="esim. MOK-001-PER" />
+              </div>
+              <div className="space-y-2">
                 <Label>Laskun päivä *</Label>
                 <Input
                   name="invoice_date"
@@ -181,6 +186,7 @@ export function CostsTab({ projectId, costs: initialCosts, categories }: CostsTa
                 <TableHead>Kuvaus</TableHead>
                 <TableHead>Toimittaja</TableHead>
                 <TableHead>Kategoria</TableHead>
+                <TableHead>Viite</TableHead>
                 <TableHead className="text-right">Summa (sis. ALV)</TableHead>
                 <TableHead>Tila</TableHead>
               </TableRow>
@@ -204,6 +210,7 @@ export function CostsTab({ projectId, costs: initialCosts, categories }: CostsTa
                     <TableCell>
                       {(cost as any).budget_category?.name || "—"}
                     </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{cost.reference || "—"}</TableCell>
                     <TableCell className="text-right font-medium">
                       {formatCurrency(cost.amount_with_vat)}
                     </TableCell>

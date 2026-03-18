@@ -52,6 +52,7 @@ export default async function CostsPage() {
                 <TableHead>Kuvaus</TableHead>
                 <TableHead>Toimittaja</TableHead>
                 <TableHead>Kategoria</TableHead>
+                <TableHead>Viite</TableHead>
                 <TableHead className="text-right">Summa</TableHead>
                 <TableHead>Tila</TableHead>
               </TableRow>
@@ -81,6 +82,7 @@ export default async function CostsPage() {
                     <TableCell>{cost.description}</TableCell>
                     <TableCell>{cost.vendor || "—"}</TableCell>
                     <TableCell>{cost.budget_category?.name || "—"}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{cost.reference || "—"}</TableCell>
                     <TableCell className="text-right font-medium">
                       {formatCurrency(cost.amount_with_vat)}
                     </TableCell>

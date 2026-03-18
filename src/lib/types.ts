@@ -59,6 +59,7 @@ export interface Cost {
   status: CostStatus;
   ai_extracted: boolean;
   ai_confidence: number | null;
+  reference: string | null;
   created_by: string;
   created_at: string;
   // Joined fields
@@ -70,6 +71,7 @@ export interface TimeEntry {
   id: string;
   project_id: string;
   user_id: string;
+  budget_category_id: string | null;
   clock_in: string;
   clock_out: string | null;
   break_minutes: number;
@@ -80,6 +82,7 @@ export interface TimeEntry {
   // Joined fields
   project?: Project;
   user?: Profile;
+  budget_category?: BudgetCategory;
 }
 
 export interface DailyLog {

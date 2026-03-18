@@ -53,7 +53,7 @@ export default async function ProjectDetailPage({
 
   const { data: timeEntries } = await supabase
     .from("time_entries")
-    .select("*, user:profiles(full_name)")
+    .select("*, user:profiles(full_name), budget_category:budget_categories(name)")
     .eq("project_id", id)
     .order("clock_in", { ascending: false })
     .limit(50);
@@ -126,7 +126,7 @@ export default async function ProjectDetailPage({
         </TabsContent>
 
         <TabsContent value="tunnit">
-          <TimeTab projectId={id} entries={timeEntries || []} />
+          <TimeTab projectId={id} entries={timeEntries || []} categories={categories || []} />
         </TabsContent>
 
         <TabsContent value="loki">

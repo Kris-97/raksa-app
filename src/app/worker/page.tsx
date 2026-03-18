@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase-client";
 import { formatTime } from "@/lib/utils";
-import type { Project, TimeEntry } from "@/lib/types";
+import type { Project, TimeEntry, BudgetCategory } from "@/lib/types";
 import { toast } from "sonner";
 
 export default function WorkerClockPage() {
@@ -11,6 +11,8 @@ export default function WorkerClockPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [categories, setCategories] = useState<BudgetCategory[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [activeEntry, setActiveEntry] = useState<TimeEntry | null>(null);
   const [elapsed, setElapsed] = useState("");
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,23 @@ export default function WorkerClockPage() {
     loadData();
   }, [loadData]);
 
+  // Fetch categories when project changes
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setCategories([]);
+      return;
+    }
+    const sb = createClient();
+    sb.from("budget_categories")
+      .select("*")
+      .eq("project_id", selectedProjectId)
+      .order("sort_order")
+      .then(({ data }) => {
+        setCategories(data || []);
+        setSelectedCategoryId("");
+      });
+  }, [selectedProjectId]);
+
   // Update elapsed timer every second
   useEffect(() => {
     if (!activeEntry) {
@@ -109,6 +128,7 @@ export default function WorkerClockPage() {
           user_id: user.id,
           clock_in: new Date().toISOString(),
           break_minutes: 0,
+          budget_category_id: selectedCategoryId || null,
         })
         .select("*, project:projects(*)")
         .single<TimeEntry>();
@@ -186,6 +206,32 @@ export default function WorkerClockPage() {
           ))}
         </select>
       </div>
+
+      {/* Category selector */}
+      {categories.length > 0 && (
+        <div className="w-full max-w-sm">
+          <label
+            htmlFor="category-select"
+            className="mb-2 block text-sm font-medium text-foreground"
+          >
+            Työvaihe
+          </label>
+          <select
+            id="category-select"
+            value={selectedCategoryId}
+            onChange={(e) => setSelectedCategoryId(e.target.value)}
+            disabled={isClockedIn}
+            className="w-full rounded-lg border border-input bg-white px-4 py-3 text-base text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-raksa-orange disabled:opacity-60"
+          >
+            <option value="">Ei valittu</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Active project & timer */}
       {isClockedIn && activeProject && (
